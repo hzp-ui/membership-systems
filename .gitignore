@@ -1,0 +1,8 @@
+node_modules/
+*.log
+test_output.txt
+test_error.txt
+.env
+.env.local
+*.mjs.backup
+*.js.backup

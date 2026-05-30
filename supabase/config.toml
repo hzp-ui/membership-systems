@@ -1,0 +1,47 @@
+[project]
+id = "membership-system"
+name = "理发店会员系统"
+
+[api]
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public"]
+
+[db]
+port = 54322
+
+[studio]
+port = 54323
+
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173"]
+
+[auth.email]
+enable_signup = true
+
+[storage]
+file_size_limit = "50MB"
+
+[edge_runtime]
+enabled = true
+
+# ========== 认证函数（登录接口，不需要 JWT 验证）==========
+[functions.auth]
+verify_jwt = false
+
+# ========== 以下所有函数启用 JWT 验证 ==========
+[functions.recharge]
+verify_jwt = true
+
+[functions.consume]
+verify_jwt = true
+
+[functions.appointment]
+verify_jwt = true
+
+[functions.statistics]
+verify_jwt = true
+
+[functions.finance]
+verify_jwt = true
