@@ -1,0 +1,60 @@
+package com.membership.controller;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.membership.common.Result;
+import com.membership.entity.Barber;
+import com.membership.security.StoreAccessUtil;
+import com.membership.service.BarberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "理发师管理")
+@RestController
+@RequestMapping(value = "/api/v1/barbers")
+@RequiredArgsConstructor
+@Slf4j
+public class BarberController {
+
+    private final BarberService barberService;
+    private final StoreAccessUtil storeAccess;
+
+    @Operation(summary = "理发师列表")
+    @GetMapping
+    public Result<IPage<Barber>> list(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size,
+            Authentication auth) {
+        String storeId = storeAccess.resolveStoreId(auth);
+        return Result.ok(barberService.page(page, size, storeId));
+    }
+
+    @Operation(summary = "创建理发师")
+    @PostMapping
+    public Result<Barber> create(@RequestBody Barber barber, Authentication auth) {
+        if (barber.getStoreId() == null) {
+            barber.setStoreId(storeAccess.resolveStoreId(auth));
+        }
+        barberService.save(barber);
+        return Result.ok(barber);
+    }
+
+    @Operation(summary = "更新理发师")
+    @PutMapping("/{id}")
+    public Result<Barber> update(@PathVariable String id, @RequestBody Barber barber) {
+        log.info("Received barber update request: id={}, name={}, phone={}, specialties={}", id, barber.getName(), barber.getPhone(), barber.getSpecialties());
+        barber.setId(id);
+        barberService.updateById(barber);
+        return Result.ok(barberService.getById(id));
+    }
+
+    @Operation(summary = "删除理发师")
+    @DeleteMapping("/{id}")
+    public Result<Void> delete(@PathVariable String id) {
+        barberService.removeById(id);
+        return Result.ok();
+    }
+}

@@ -1,0 +1,30 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Build output
+target/
+*.class
+*.jar
+*.war
+
+# Logs
+*.log
+spring-boot*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Test
+src/test/
+
+# Config files with sensitive data
+src/main/resources/application-local.yml
+src/main/resources/application-prod.yml
