@@ -1,4 +1,4 @@
-# 理发店会员管理系统 - 后端
+# 会员管理系统 - 后端
 
 基于 **Spring Boot 3.2.5 + MyBatis-Plus 3.5.7 + MySQL 8.0** 构建的 RESTful API 后端服务。
 
