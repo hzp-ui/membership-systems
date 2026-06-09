@@ -37,7 +37,7 @@
 ## 项目结构
 
 ```
-MembershioSystemJava/
+MembershipSystemJava/
 ├── src/main/java/com/membership/
 │   ├── MembershipApplication.java      # 启动类
 │   ├── common/                          # 通用工具
@@ -602,14 +602,39 @@ docker run -p 8080:8080 membership-system
 
 ## 已知问题
 
-1. **项目路径拼写错误**: `MembershioSystemJava` (应为 `MembershipSystemJava`)
-2. **前端路径拼写错误**: `MmbershipJavaWeb` (应为 `MembershipJavaWeb`)
-3. **部分 Controller 需要优化**: 代码复用（StoreAccessUtil 仅替换了 3/7 个）
-4. **Swagger 文档待完善**: 需要添加详细的 API 文档注解
+1. ~~项目路径拼写错误~~ ✅ 已修复（`MembershioSystemJava` → `MembershipSystemJava`）
+2. **前端路径拼写错误**: `MmbershipJavaWeb` (应为 `MembershipJavaWeb`)，需手动关闭 IDE 后重命名
+3. ~~部分 Controller 需要优化~~ ✅ 已全部完成（10/13 个 Controller 使用 StoreAccessUtil，剩余 4 个不需要门店过滤）
+4. ~~Swagger 文档待完善~~ ✅ 已完成（13 个 Controller，51 个 @Operation，13 个 DTO/VO @Schema，42 个 Schema 总数）
 
 ---
 
+## API 文档
+
+### Swagger UI
+
+访问地址：**http://localhost:8080/swagger-ui.html**
+
+功能：
+- 可视化浏览所有 34 个 API 端点
+- 在线测试每个接口
+- 查看完整的 Schema 定义（42 个）
+- 支持管理员登录后测试需要认证的接口
+
+### 在线 API Docs
+
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+- Swagger UI: http://localhost:8080/swagger-ui.html
+
+> ⚠️ 后端服务必须处于运行状态才能访问 Swagger UI
+
 ## 最近更新
+
+### 2026-06-09
+- ✅ 13 个 Controller 添加 Swagger @Tag/@Operation 注解（51 个端点）
+- ✅ 13 个 DTO/VO 添加 @Schema 注解（42 个 Schema）
+- ✅ 修复 SecurityConfig：放行 /swagger-ui.html、/swagger-resources/**
+- ✅ Swagger UI 在线文档可用（http://localhost:8080/swagger-ui.html）
 
 ### 2026-06-08
 - ✅ 完成 37 个后端 API 接口
