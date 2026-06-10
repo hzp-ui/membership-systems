@@ -3,6 +3,8 @@ package com.membership.config;
 import com.membership.security.JwtAuthFilter;
 import com.membership.security.UnauthorizedHandler;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,6 +33,7 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final UnauthorizedHandler unauthorizedHandler;
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,6 +42,13 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler))
+            .headers(headers -> headers
+                .contentTypeOptions(cto -> {})
+                .frameOptions(fo -> fo.deny())
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .includeSubDomains(true)
+                    .maxAgeInSeconds(31536000))
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/login", "/api/v1/auth/admin/login", "/api/v1/auth/member/login", "/api/v1/auth/member/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/stores").permitAll()
@@ -59,10 +69,12 @@ public class SecurityConfig {
         if (allowedOrigins != null && !allowedOrigins.isBlank()) {
             config.setAllowedOrigins(List.of(allowedOrigins.split(",")));
         } else {
-            config.setAllowedOriginPatterns(List.of("*"));
+            // 开发环境仅允许本地访问
+            config.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
+            log.warn("CORS: 未配置 CORS_ALLOWED_ORIGINS 环境变量，仅允许本地访问");
         }
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

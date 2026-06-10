@@ -17,6 +17,7 @@ public class AuditLog {
     private String detail;
     private String storeId;
     private String ipAddress;
+    private String userAgent;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 }

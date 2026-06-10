@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -112,7 +113,19 @@ public class AuthServiceImpl implements AuthService {
                         .ge(LoginAttempt::getAttemptTime, since));
 
         if (failCount != null && failCount >= MAX_LOGIN_ATTEMPTS) {
-            throw new BusinessException(429, "登录失败次数过多，请" + LOCKOUT_MINUTES + "分钟后再试");
+            LoginAttempt lastAttempt = loginAttemptMapper.selectOne(
+                    new LambdaQueryWrapper<LoginAttempt>()
+                            .eq(LoginAttempt::getPhone, identifier)
+                            .eq(LoginAttempt::getSuccess, false)
+                            .orderByDesc(LoginAttempt::getAttemptTime)
+                            .last("LIMIT 1"));
+            if (lastAttempt != null) {
+                LocalDateTime unlockTime = lastAttempt.getAttemptTime().plusMinutes(LOCKOUT_MINUTES);
+                long remainingMinutes = java.time.Duration.between(LocalDateTime.now(), unlockTime).toMinutes();
+                if (remainingMinutes > 0) {
+                    throw new BusinessException(429, "账户已锁定，请" + remainingMinutes + "分钟后再试");
+                }
+            }
         }
     }
 
